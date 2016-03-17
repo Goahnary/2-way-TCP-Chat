@@ -72,6 +72,9 @@ def main():
                           chat_client.sock.close()
                           chat_client.kill()
                           print "success!"
+                          print "Halting Text_Input"
+                          self.kill()
+                          print "done."
                       except:
                           Exception
                   else:
@@ -84,10 +87,12 @@ def main():
                       try:
                           print "Disconnecting..."
                           chat_server.running = False
-                          chat_server.conn.shutdown()
                           chat_server.conn.close()
                           chat_server.kill()
                           print "success!"
+                          print "Halting Text_Input"
+                          self.kill()
+                          print "done."
                       except:
                           Exception
                   else:
