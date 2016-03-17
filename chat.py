@@ -29,7 +29,7 @@ def main():
                             print "Them: " + data
                         else:
                             break
-                    time.sleep(1)
+                    time.sleep(0)
             def kill(self):
                 self.running = 0
      
@@ -53,7 +53,7 @@ def main():
                             print "Them: " + data
                         else:
                             break
-                    time.sleep(1)
+                    time.sleep(0)
             def kill(self):
                 self.running = 0
                 
@@ -70,6 +70,7 @@ def main():
                           print "Closing socket..."
                           chat_client.running = False
                           chat_client.sock.close()
+                          chat_client.kill()
                           print "success!"
                       except:
                           Exception
@@ -83,7 +84,9 @@ def main():
                       try:
                           print "Disconnecting..."
                           chat_server.running = False
+                          chat_server.conn.shutdown()
                           chat_server.conn.close()
+                          chat_server.kill()
                           print "success!"
                       except:
                           Exception
