@@ -1,5 +1,3 @@
-
-
 import socket
 import threading
 import select
@@ -23,20 +21,15 @@ def main():
                 self.conn, self.addr = s.accept()
                 # Select loop for listen
                 while self.running == True:
-                    inputready,outputready,exceptready \
-                      = select.select ([self.conn],[self.conn],[])
+                    inputready,outputready,exceptready = select.select ([self.conn],[self.conn],[])
                     for input_item in inputready:
                         # Handle sockets
                         data = self.conn.recv(1024)
-                        if data == "quit" or "Quit":
-                            print "Disconnecting..."
-                            self.conn.close()
-                            print "success!"
-                        else if data:
+                        if data:
                             print "Them: " + data
                         else:
                             break
-                    time.sleep(0)
+                    time.sleep(1)
             def kill(self):
                 self.running = 0
      
@@ -52,20 +45,15 @@ def main():
                 self.sock.connect((self.host, PORT))
                 # Select loop for listen
                 while self.running == True:
-                    inputready,outputready,exceptready \
-                      = select.select ([self.sock],[self.sock],[])
+                    inputready,outputready,exceptready = select.select ([self.sock],[self.sock],[])
                     for input_item in inputready:
                         # Handle sockets
                         data = self.sock.recv(1024)
-                        if data == "quit" or "Quit":
-                            print "Closing socket..."
-                            self.sock.close()
-                            print "success!"
-                        else if data:
+                        if data:
                             print "Them: " + data
                         else:
                             break
-                    time.sleep(0)
+                    time.sleep(1)
             def kill(self):
                 self.running = 0
                 
@@ -76,14 +64,34 @@ def main():
             def run(self):
                 while self.running == True:
                   text = raw_input('')
-                  try:
-                      chat_client.sock.sendall(text)
-                  except:
-                      Exception
-                  try:
-                      chat_server.conn.sendall(text)
-                  except:
-                      Exception
+                  
+                  if text == "quit" and chat_client.isAlive():
+                      try:
+                          print "Closing socket..."
+                          chat_client.sock.close()
+                          print "success!"
+                      except:
+                          Exception
+                  else:
+                      try:
+                          chat_client.sock.sendall(text)
+                      except:
+                          Exception
+
+                  if text == "quit" and chat_server.isAlive():
+                      try:
+                          print "Disconnecting..."
+                          chat_server.conn.close()
+                          print "success!"
+                      except:
+                          Exception
+                  else:
+                      try:
+                          chat_server.conn.sendall(text)
+                      except:
+                          Exception
+
+
                   time.sleep(0)
             def kill(self):
                 self.running = 0
