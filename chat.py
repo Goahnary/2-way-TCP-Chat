@@ -87,8 +87,8 @@ def main():
                       try:
                           print "Disconnecting..."
                           chat_server.running = False
-                          chat_server.conn.close()
                           chat_server.kill()
+                          chat_server.conn.close()
                           print "success!"
                           print "Halting Text_Input"
                           self.kill()
