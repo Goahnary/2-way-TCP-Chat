@@ -68,6 +68,7 @@ def main():
                   if text == "quit" and chat_client.isAlive():
                       try:
                           print "Closing socket..."
+                          chat_client.running = False
                           chat_client.sock.close()
                           print "success!"
                       except:
@@ -81,6 +82,7 @@ def main():
                   if text == "quit" and chat_server.isAlive():
                       try:
                           print "Disconnecting..."
+                          chat_server.running = False
                           chat_server.conn.close()
                           print "success!"
                       except:
