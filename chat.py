@@ -13,7 +13,7 @@ def main():
                 self.addr = None
             def run(self):
                 HOST = ''
-                PORT = 1776
+                PORT = 9835
                 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
                 s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
                 s.bind((HOST,PORT))
@@ -40,7 +40,7 @@ def main():
                 self.sock = None
                 self.running = 1
             def run(self):
-                PORT = 1776
+                PORT = 9835
                 self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
                 self.sock.connect((self.host, PORT))
                 # Select loop for listen
