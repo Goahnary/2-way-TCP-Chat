@@ -2,6 +2,7 @@ import socket
 import threading
 import select
 import time
+import json
 
 def main():
 
@@ -24,9 +25,10 @@ def main():
                     inputready,outputready,exceptready = select.select ([self.conn],[self.conn],[])
                     for input_item in inputready:
                         # Handle sockets
-                        data = self.conn.recv(1024)
+                        jsonData = self.conn.recv(1024)
+                        data = json.loads(jsonData)
                         if data:
-                            print "Them: " + data
+                            print "\r" + data[0] + ": " + data[1] + "\n" + self.username + ": \033[F"
                         else:
                             break
                     time.sleep(0)
@@ -48,9 +50,10 @@ def main():
                     inputready,outputready,exceptready = select.select ([self.sock],[self.sock],[])
                     for input_item in inputready:
                         # Handle sockets
-                        data = self.sock.recv(1024)
+                        jsonData = self.sock.recv(1024)
+                        data = json.loads(jsonData)
                         if data:
-                            print "Them: " + data
+                            print "\r" + data[0] + ": " + data[1] + "\n" + self.username + ": \033[F"
                         else:
                             break
                     time.sleep(0)
@@ -63,9 +66,10 @@ def main():
                 self.running = 1
             def run(self):
                 while self.running == True:
-                  text = raw_input('')
+                  text = raw_input(self.username + ": " )
                   
-                  if text == "quit" and chat_client.isAlive():
+                  if chat_client.isAlive():
+                    if text == "quit" and chat_client.isAlive():
                       try:
                           print "Closing socket..."
                           chat_client.running = False
@@ -77,13 +81,16 @@ def main():
                           print "done."
                       except:
                           Exception
-                  else:
-                      try:
-                          chat_client.sock.sendall(text)
-                      except:
-                          Exception
+                    else:
+                        try:
+                            jsonText = json.dumps((self.username, text))
+                            chat_client.sock.sendall(jsonText)
+                            # print "Sent as CLIENT"
+                        except:
+                            Exception
 
-                  if text == "quit" and chat_server.isAlive():
+                  elif chat_server.isAlive():
+                    if text == "quit":
                       try:
                           print "Disconnecting..."
                           chat_server.running = False
@@ -95,11 +102,17 @@ def main():
                           print "done."
                       except:
                           Exception
+                    else:
+                        try:
+                            jsonText = json.dumps((self.username, text))
+                            chat_server.conn.sendall(jsonText)
+                            # print "Sent as CLIENT"
+                        except:
+                            Exception
                   else:
-                      try:
-                          chat_server.conn.sendall(text)
-                      except:
-                          Exception
+                    print "Neither Server nor Client is Alive."
+                    print "Exiting Chat"
+                    self.kill()
 
 
                   time.sleep(0)
@@ -107,28 +120,37 @@ def main():
                 self.running = 0
 
     # Prompt, object instantiation, and threads start here.
-
+    print "Welcome to my two way chatter box!";
+    username = raw_input('Please type a username: ')
     ip_addr = raw_input('What IP (or type listen)?: ')
 
     if ip_addr == 'listen':
+        print "Waiting for response..."
         chat_server = Chat_Server()
         chat_client = Chat_Client()
+        chat_server.username = username
         chat_server.start()
         text_input = Text_Input()
+        text_input.username = username
         text_input.start()
         
     elif ip_addr == 'Listen':
+        print "Waiting for response..."
         chat_server = Chat_Server()
         chat_client = Chat_Client()
+        chat_server.username = username
         chat_server.start()
         text_input = Text_Input()
+        text_input.username = username
         text_input.start()
         
     else:
         chat_server = Chat_Server()
         chat_client = Chat_Client()
+        chat_client.username = username
         chat_client.host = ip_addr
         text_input = Text_Input()
+        text_input.username = username
         chat_client.start()
         text_input.start()
 
