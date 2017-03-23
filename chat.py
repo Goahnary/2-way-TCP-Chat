@@ -14,7 +14,7 @@ def main():
                 self.addr = None
             def run(self):
                 HOST = ''
-                PORT = 9835
+                PORT = 1337
                 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
                 s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
                 s.bind((HOST,PORT))
@@ -42,7 +42,7 @@ def main():
                 self.sock = None
                 self.running = 1
             def run(self):
-                PORT = 9835
+                PORT = 1337
                 self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
                 self.sock.connect((self.host, PORT))
                 # Select loop for listen
@@ -67,8 +67,12 @@ def main():
             def run(self):
                 while self.running == True:
                   text = raw_input(self.username + ": " )
-                  
+
+                  # for i in range(0, len(text), 1):
+                  #   print text[i]
+
                   if chat_client.isAlive():
+                    # print "CLIENT IS ALIVE"
                     if text == "quit" and chat_client.isAlive():
                       try:
                           print "Closing socket..."
@@ -83,13 +87,19 @@ def main():
                           Exception
                     else:
                         try:
+                            # print "ENCODING JSON"
                             jsonText = json.dumps((self.username, text))
+                            # print "JSON ENCODED!"
+                            # print "SENDING AS CLIENT"
+                            # print jsonText
                             chat_client.sock.sendall(jsonText)
-                            # print "Sent as CLIENT"
+                            # print "SENT AS CLIENT"
                         except:
                             Exception
 
+
                   elif chat_server.isAlive():
+                    # print "SERVER IS ALIVE"
                     if text == "quit":
                       try:
                           print "Disconnecting..."
@@ -102,13 +112,19 @@ def main():
                           print "done."
                       except:
                           Exception
+                          print "ERROR SENDING"
                     else:
                         try:
+                            # print "ENCODING JSON"
                             jsonText = json.dumps((self.username, text))
+                            # print "JSON ENCODED!"
+                            # print "SENDING AS SERVER"
+                            # print jsonText
                             chat_server.conn.sendall(jsonText)
-                            # print "Sent as CLIENT"
+                            # print "Sent as SERVER"
                         except:
                             Exception
+                            print "ERROR SENDING"
                   else:
                     print "Neither Server nor Client is Alive."
                     print "Exiting Chat"
@@ -120,7 +136,7 @@ def main():
                 self.running = 0
 
     # Prompt, object instantiation, and threads start here.
-    print "Welcome to my two way chatter box!";
+    print "Welcome to my two way chatter box!"
     username = raw_input('Please type a username: ')
     ip_addr = raw_input('What IP (or type listen)?: ')
 
